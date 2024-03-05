@@ -11,11 +11,9 @@ on:
   repository_dispatch:
     types: [new-release-published]
 
-permissions:
-  contents: write
-
 jobs:
   patch:
+    name: "Patch nerdfonts into juliamono"
     runs-on: ubuntu-latest
     env:
       version: ${{ github.event.client_payload.version || inputs.version }}
@@ -32,84 +30,116 @@ jobs:
 
       - name: Patch
         run: |
-          mkdir -p juliamono-nerd-font-variant/font/{regular,propo}
-          docker run --rm -v $(pwd)/juliamono:/in -v $(pwd)/juliamono-nerd-font-variant/font/regular:/out nerdfonts/patcher --complete --careful --no-progressbars
-          docker run --rm -v $(pwd)/juliamono:/in -v $(pwd)/juliamono-nerd-font-variant/font/propo:/out nerdfonts/patcher --variable-width-glyphs --complete --careful --no-progressbars
-          zip -j "juliamono-nerd-font-regular".zip juliamono-nerd-font-variant/font/regular/*
-          tar czf "juliamono-nerd-font-regular".tar.gz juliamono-nerd-font-variant/font/regular/*
-          zip -j "juliamono-nerd-font-propo".zip juliamono-nerd-font-variant/font/propo/*
-          tar czf "juliamono-nerd-font-propo".tar.gz juliamono-nerd-font-variant/font/propo/*
-          zip -j "${{ env.version }}".zip juliamono-nerd-font-variant/font/regular/* juliamono-nerd-font-variant/font/propo/*
-          tar czf "${{ env.version }}".tar.gz juliamono-nerd-font-variant/font/regular/* juliamono-nerd-font-variant/font/propo/*
-          mkdir -p juliamono-nerd-font-variant/archive
-          cp -t juliamono-nerd-font-variant/archive *.tar.gz *.zip
+          mkdir -p font
+          docker run --rm -v `pwd`/juliamono:/in -v `pwd`/font/regular:/out nerdfonts/patcher --complete --careful --no-progressbars
+          docker run --rm -v `pwd`/juliamono:/in -v `pwd`/font/propo:/out nerdfonts/patcher --complete --variable-width-glyphs --careful --no-progressbars
 
-      - name: Commit and Push
-        env:
-          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+      - name: Archive Patched Fonts
+        uses: actions/upload-artifact@v4
+        with:
+          name: patched-fonts
+          path: font/*
+          retention-days: 14
+
+      - name: Zip Release Artifacts
         run: |
-          cd juliamono-nerd-font-variant
-          git config --local user.email "131801252+merger-bot[bot]@users.noreply.github.com"
-          git config --local user.name "merger-bot[bot]"
-          # sed -i "s%\[\*\*Download\*\*\].*%\[\*\*Download\*\*\](https://github.com/${GITHUB_REPOSITORY}/releases/download/${{ env.version }}/font.zip)%g" README.md
-          git add .
-          git commit -m 'Updated juliamono-nerd-font-variant to ${{ env.version }}'
-          git push
+          zip -j fonts.zip font/*
+          zip -j regular.zip font/regular/*
+          zip -j propo.zip font/regular/*
+
+      - name: Update download link in README.md
+        run: |
+          cd juliamono-nerd-font
+          sed -i 's/releases\/download\/v[0-9.]\+/releases\/download\/${{ env.version }}/g' README.md
 
       - name: checksum
         id: checksum
         run: |
-          cd juliamono-nerd-font-variant/archive
+          for f in *.zip; do
+            shasum -a 256 $f > "$f.sha256"
+          done
           {
             echo 'sha256_zip<<EOF'
             shasum -a 256 *.zip
             echo EOF
           } >> $GITHUB_OUTPUT
-          {
-            echo 'sha256_tgz<<EOF'
-            shasum -a 256 *.tar.gz
-            echo EOF
-          } >> $GITHUB_OUTPUT
-          {
-            echo 'md5sum_zip<<EOF'
-            md5sum *.zip
-            echo EOF
-          } >> $GITHUB_OUTPUT
-          {
-            echo 'md5sum_tgz<<EOF'
-            md5sum *.tar.gz
-            echo EOF
-          } >> $GITHUB_OUTPUT
 
       - uses: actions/create-github-app-token@v1
-        id: generate-token
+        id: merge-token
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      - uses: "softprops/action-gh-release@v1"
+      - name: Create Pull Request
+        id: pr
+        uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ steps.generate-token.outputs.token }}
-          tag_name: ${{ env.version }}
-          generate_release_notes: true
-          append_body: false
-          files: |
-            ttf-juliamono-nerd-font-variant-v${{ env.version }}.zip
-            ttf-juliamono-nerd-font-variant-v${{ env.version }}.tar.gz
-            juliamono-nerd-font-regular.zip
-            juliamono-nerd-font-regular.tar.gz
-            juliamono-nerd-font-propo.zip
-            juliamono-nerd-font-propo.tar.gz
+          path: juliamono-nerd-font-variant
+          add-paths: README.md
+          token: ${{ steps.merge-token.outputs.token }}
+          title: "[Merger Bot] Release ${{ env.version }}"
+          commit-message: Updated juliamono-nerd-font to ${{ env.version }}
+          committer: merger-bot[bot] <131801252+merger-bot[bot]@users.noreply.github.com>
+          author: merger-bot[bot] <131801252+merger-bot[bot]@users.noreply.github.com>
+          branch: auto-update
+          labels: |
+            automated pr
+            update
           body: |
-            `sha -a 256` Checksum
-            ```bash
-            ${{ steps.checksum.outputs.sha256_zip }}
+            Updated juliamono-nerd-font-variant to ${{ env.version }}
 
-            ${{ steps.checksum.outputs.sha256_tgz }}
-            ```
-            `md5sum` Checksum
-            ```bash
-            ${{ steps.checksum.outputs.md5sum_zip }}
+      - name: Enable Pull Request auto merge
+        if: steps.pr.outputs.pull-request-operation == 'created'
+        working-directory: juliamono-nerd-font-variant
+        run: gh pr merge --squash --auto "${{ steps.pr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ steps.merge-token.outputs.token }}
 
-            ${{ steps.checksum.outputs.md5sum_tgz }}
-            ```
+      - uses: actions/create-github-app-token@v1
+        if: steps.pr.outputs.pull-request-operation == 'created'
+        id: approve-token
+        with:
+          app-id: ${{ secrets.APP_ID_APPROVE }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY_APPROVE }}
+
+      - name: Auto approve
+        if: steps.pr.outputs.pull-request-operation == 'created'
+        working-directory: juliamono-nerd-font-variant
+        run: gh pr review --approve "${{ steps.pr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ steps.approve-token.outputs.token }}
+
+      - name: Create Release
+        if: steps.pr.outputs.pull-request-operation == 'created'
+        working-directory: juliamono-nerd-font-variant
+        run: gh release create ${{ env.version }} ../fonts.zip ../regular.zip ../propo.zip --generate-notes
+        env:
+          GH_TOKEN: ${{ steps.merge-token.outputs.token }}
+      
+      # Old Release File Creation
+      # - name: Create Pull Request
+      #   id: pr
+      #   uses: peter-evans/create-pull-request@v6
+      #   with:
+      #     token: ${{ steps.generate-token.outputs.token }}
+      #     tag_name: ${{ env.version }}
+      #     generate_release_notes: true
+      #     append_body: false
+      #     files: |
+      #       ttf-juliamono-nerd-font-variant-v${{ env.version }}.zip
+      #       ttf-juliamono-nerd-font-variant-v${{ env.version }}.tar.gz
+      #       juliamono-nerd-font-regular.zip
+      #       juliamono-nerd-font-regular.tar.gz
+      #       juliamono-nerd-font-propo.zip
+      #       juliamono-nerd-font-propo.tar.gz
+      #     body: |
+      #       `sha -a 256` Checksum
+      #       ```bash
+      #       ${{ steps.checksum.outputs.sha256_zip }}
+      #       ${{ steps.checksum.outputs.sha256_tgz }}
+      #       ```
+      #       `md5sum` Checksum
+      #       ```bash
+      #       ${{ steps.checksum.outputs.md5sum_zip }}
+      #       ${{ steps.checksum.outputs.md5sum_tgz }}
+      #       ```
