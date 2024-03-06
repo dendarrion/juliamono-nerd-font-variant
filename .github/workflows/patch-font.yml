@@ -31,8 +31,8 @@ jobs:
       - name: Patch
         run: |
           mkdir -p juliamono-nerd-font-variant/font/{regular,propo}
-          docker run --rm -v $(pwd)/juliamono:/in -v $(pwd)/juliamono-nerd-font-variant/font/regular:/out -e nerdfonts/patcher --complete --careful --no-progressbars
-          docker run --rm -v $(pwd)/juliamono:/in -v $(pwd)/juliamono-nerd-font-variant/font/propo:/out -e nerdfonts/patcher --variable-width-glyphs --complete --careful --no-progressbars
+          docker run --rm -v $(pwd)/juliamono:/in -v $(pwd)/juliamono-nerd-font-variant/font/regular:/out nerdfonts/patcher --complete --careful --no-progressbars
+          docker run --rm -v $(pwd)/juliamono:/in -v $(pwd)/juliamono-nerd-font-variant/font/propo:/out nerdfonts/patcher --variable-width-glyphs --complete --careful --no-progressbars
           zip -j "juliamono-nerd-font-regular".zip juliamono-nerd-font-variant/font/regular/*
           tar czf "juliamono-nerd-font-regular".tar.gz juliamono-nerd-font-variant/font/regular/*
           zip -j "juliamono-nerd-font-propo".zip juliamono-nerd-font-variant/font/propo/*
