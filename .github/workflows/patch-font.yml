@@ -54,7 +54,6 @@ jobs:
           # sed -i "s%\[\*\*Download\*\*\].*%\[\*\*Download\*\*\](https://github.com/${GITHUB_REPOSITORY}/releases/download/${{ env.version }}/font.zip)%g" README.md
           git add .
           git commit -m 'Updated juliamono-nerd-font-variant to ${{ env.version }}'
-          git pull
           git push
 
       - uses: actions/create-github-app-token@v1
