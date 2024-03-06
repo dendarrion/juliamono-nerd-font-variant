@@ -40,7 +40,7 @@ jobs:
           zip -j "juliamono-nerd-font-propo".zip juliamono-nerd-font-variant/font/propo/*
           tar czf "juliamono-nerd-font-propo".tar.gz juliamono-nerd-font-variant/font/propo/*
           zip -j "${{ env.version }}".zip juliamono-nerd-font-variant/font/regular/* juliamono-nerd-font-variant/font/propo/*
-          tar czf "${{ env.version }}".tar.gz juliamono-nerd-font-variant/font/regular/* juliamono-nerd-font-variant/font/propo/* juliamono-nerd-font-variant/font/regular/*
+          tar czf "${{ env.version }}".tar.gz juliamono-nerd-font-variant/font/regular/* juliamono-nerd-font-variant/font/propo/*
           mkdir -p juliamono-nerd-font-variant/archive
           cp -t juliamono-nerd-font-variant/archive *.tar.gz *.zip
 
