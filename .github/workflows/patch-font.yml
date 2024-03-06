@@ -72,3 +72,15 @@ jobs:
             juliamono-nerd-font-regular.tar.gz
             juliamono-nerd-font-propo.zip
             juliamono-nerd-font-propo.tar.gz
+
+  sha256:
+    runs-on: ubuntu-latest
+    needs: patch
+    steps:
+      - name: generate-sha
+        id: generate-sha
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ inputs.version }}
+        run: gh workflow run release_sha.yml --repo $GH_REPO --ref main -f version=$VERSION

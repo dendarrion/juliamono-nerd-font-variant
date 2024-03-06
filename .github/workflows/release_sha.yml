@@ -1,0 +1,50 @@
+name: Release SHA256
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release tag'
+        required: true
+        default: 'v0.054'
+        type: string
+
+jobs:
+  sha256:
+    name: sha256
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: try-nerd-font-actions
+      - uses: tibdex/github-app-token@v1
+        id: generate-token
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: checksum
+        id: checksum
+        run: |
+          cd try-nerd-font-actions/archive
+          {
+            echo 'sha256_zip<<EOF'
+            find . -name '*.zip' -exec shasum -a 256 {} \;
+            echo EOF
+          } >> $GITHUB_OUTPUT
+          {
+            echo 'sha256_tgz<<EOF'
+            find . -name '*.tar.gz' -exec shasum -a 256 {} \;
+            echo EOF
+          } >> $GITHUB_OUTPUT
+      - uses: "softprops/action-gh-release@v1"
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          tag_name: ${{ inputs.version }}
+          append_body: true
+          body: |
+            `sha -a 256` Checksum
+            ```bash
+            ${{ steps.checksum.outputs.sha256_zip }}
+
+            ${{ steps.checksum.outputs.sha256_tgz }}
+            ```
