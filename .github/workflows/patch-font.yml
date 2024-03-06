@@ -15,8 +15,6 @@ permissions:
 jobs:
   patch:
     runs-on: ubuntu-latest
-    env:
-      version: ${{ inputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: 'cormullion/juliamono'
-          ref: ${{ env.version }}
+          ref: ${{ inputs.version }}
           path: juliamono
 
       - name: Patch
@@ -37,8 +35,8 @@ jobs:
           tar czf "juliamono-nerd-font-regular".tar.gz juliamono-nerd-font-variant/font/regular/*
           zip -j "juliamono-nerd-font-propo".zip juliamono-nerd-font-variant/font/propo/*
           tar czf "juliamono-nerd-font-propo".tar.gz juliamono-nerd-font-variant/font/propo/*
-          zip -j "${{ env.version }}".zip juliamono-nerd-font-variant/font/regular/* juliamono-nerd-font-variant/font/propo/*
-          tar czf "${{ env.version }}".tar.gz juliamono-nerd-font-variant/font/regular/* juliamono-nerd-font-variant/font/propo/* juliamono-nerd-font-variant/font/regular/*
+          zip -j "${{ inputs.version }}".zip juliamono-nerd-font-variant/font/regular/* juliamono-nerd-font-variant/font/propo/*
+          tar czf "${{ inputs.version }}".tar.gz juliamono-nerd-font-variant/font/regular/* juliamono-nerd-font-variant/font/propo/* juliamono-nerd-font-variant/font/regular/*
           mkdir -p juliamono-nerd-font-variant/archive
           cp -t juliamono-nerd-font-variant/archive *.tar.gz *.zip
 
@@ -49,9 +47,9 @@ jobs:
           cd juliamono-nerd-font-variant
           git config --local user.email "131801252+merger-bot[bot]@users.noreply.github.com"
           git config --local user.name "merger-bot[bot]"
-          # sed -i "s%\[\*\*Download\*\*\].*%\[\*\*Download\*\*\](https://github.com/${GITHUB_REPOSITORY}/releases/download/${{ env.version }}/font.zip)%g" README.md
+          # sed -i "s%\[\*\*Download\*\*\].*%\[\*\*Download\*\*\](https://github.com/${GITHUB_REPOSITORY}/releases/download/${{ inputs.version }}/font.zip)%g" README.md
           git add .
-          git commit -m 'Updated juliamono-nerd-font-variant to ${{ env.version }}'
+          git commit -m 'Updated juliamono-nerd-font-variant to ${{ inputs.version }}'
           git pull
           git push
 
@@ -64,11 +62,11 @@ jobs:
       - uses: "softprops/action-gh-release@v1"
         with:
           token: ${{ steps.generate-token.outputs.token }}
-          tag_name: ${{ env.version }}
+          tag_name: ${{ inputs.version }}
           generate_release_notes: true
           files: |
-            ${{ env.version }}.zip
-            ${{ env.version }}.tar.gz
+            ${{ inputs.version }}.zip
+            ${{ inputs.version }}.tar.gz
             juliamono-nerd-font-regular.zip
             juliamono-nerd-font-regular.tar.gz
             juliamono-nerd-font-propo.zip
