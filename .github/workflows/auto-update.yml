@@ -9,26 +9,26 @@ jobs:
   check-new-release:
     name: "Check for new releases"
     runs-on: "ubuntu-latest"
+    outputs:
+      release: ${{ steps.new-release.outputs.release }}
+      version: ${{ steps.new-release.outputs.version }}
     steps:
       - id: new-release
         run: |
           JULIA_FONT_VERSION=$(curl -s https://api.github.com/repos/cormullion/juliamono/releases/latest | jq -r .tag_name | tr -d "[:space:]")
           JULIA_NERD_FONT_VERSION=$(curl -s https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r .tag_name | tr -d "[:space:]" || echo -n "v0")
           if [ ! "${JULIA_FONT_VERSION}" = "${JULIA_NERD_FONT_VERSION}" ]; then
-            echo "release=TRUE" >> $GITHUB_OUTPUT
-            echo "version=${JULIA_FONT_VERSION}" >> $GITHUB_OUTPUT
+            release="TRUE"
+            version=${JULIA_FONT_VERSION}
           else
-            echo "release=FALSE" >> $GITHUB_OUTPUT
+            release="FALSE"
           fi
-      - uses: actions/checkout@v4
-      - uses: actions/create-github-app-token@v1
-        id: generate-token
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ steps.generate-token.outputs.token }}
-          event-type: new-release-published
-          client-payload: '{"version": "${{ steps.new-release.outputs.version }}"}'
+          echo "release=$release" >> $GITHUB_OUTPUT
+          echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Trigger patch-font.yaml
+        if: ${{ steps.new-release.outputs.release == 'TRUE' }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ steps.new-release.outputs.version }}
+        run: gh workflow run patch-font.yml --repo $GH_REPO --ref main -f version=$VERSION

@@ -1,8 +1,9 @@
 # JuliaMono extended Nerd-Fonts edition
+[![Auto Updated](https://github.com/dendarrion/try-nerd-font-actions/actions/workflows/auto-update.yml/badge.svg)](https://github.com/dendarrion/try-nerd-font-actions/actions/workflows/auto-update.yml) [![Patch Font](https://github.com/dendarrion/try-nerd-font-actions/actions/workflows/patch-font.yml/badge.svg)](https://github.com/dendarrion/try-nerd-font-actions/actions/workflows/patch-font.yml) [![Generate SHA256](https://github.com/dendarrion/try-nerd-font-actions/actions/workflows/release_sha.yml/badge.svg)](https://github.com/dendarrion/try-nerd-font-actions/actions/workflows/release_sha.yml)
 
-This is a the beautiful [JuliaMono](https://github.com/cormullion/juliamono) font by Cormullion extended via fontforge (aka [Nerd Fonts Patcher](https://github.com/ryanoasis/nerd-fonts#font-patcher)) with all single width glyphs from the Nerd Fonts project.
+This is the beautiful [JuliaMono](https://github.com/cormullion/juliamono) font by cormullion, extended via fontforge (aka [Nerd Fonts Patcher](https://github.com/ryanoasis/nerd-fonts#font-patcher)) with variable width glyphs and propo variants from the Nerd Fonts project.
 
-[**Download**](https://github.com/mietzen/juliamono-nerd-font/releases/download/v0.054/font.zip)
+Forked from [mietzen's single width glyphs patch](https://github.com/mietzen/juliamono-nerd-font). The `--mono` version causes funky looking glyphs in my waybar config similar to [this](https://old.reddit.com/r/voidlinux/comments/10o6yql/nerdfont_glyphs_too_small_on_waybar).
 
 ## Feel free to fork and modify!
 
