@@ -8,15 +8,19 @@ on:
         required: true
         default: 'v0.054'
         type: string
+  repository_dispatch:
+    types: [new-release-uploaded]
 
 jobs:
   sha256:
     name: sha256
+    env:
+      version: ${{ github.event.client_payload.version || inputs.version }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          path: try-nerd-font-actions
+          path: juliamono-nerd-font-variation
       - uses: tibdex/github-app-token@v1
         id: generate-token
         with:
@@ -25,7 +29,7 @@ jobs:
       - name: checksum
         id: checksum
         run: |
-          cd try-nerd-font-actions/archive
+          cd juliamono-nerd-font-variation/archive
           {
             echo 'sha256_zip<<EOF'
             find . -name '*.zip' -exec shasum -a 256 {} \;
@@ -39,7 +43,7 @@ jobs:
       - uses: "softprops/action-gh-release@v1"
         with:
           token: ${{ steps.generate-token.outputs.token }}
-          tag_name: ${{ inputs.version }}
+          tag_name: ${{ env.version }}
           append_body: true
           body: |
             `sha -a 256` Checksum
