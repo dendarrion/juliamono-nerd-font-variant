@@ -63,6 +63,10 @@ jobs:
             shasum -a 256 *.zip
             echo EOF
           } >> $GITHUB_OUTPUT
+      - name: Update download link in README.md
+        run: |
+          cd juliamono-nerd-font
+          sed -i 's/releases\/download\/v[0-9.]\+/releases\/download\/${{ env.version }}/g' README.md
 
       - uses: actions/create-github-app-token@v1
         id: merge-token
