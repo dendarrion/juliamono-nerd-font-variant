@@ -49,10 +49,10 @@ jobs:
 
       - name: Update download link in README.md
         run: |
-          cd juliamono-nerd-font
+          cd juliamono-nerd-font-variant
           sed -i 's/releases\/download\/v[0-9.]\+/releases\/download\/${{ env.version }}/g' README.md
 
-      - name: checksum
+      - name: Create file checksum
         id: checksum
         run: |
           for f in *.zip; do
