@@ -80,4 +80,4 @@ jobs:
         with:
           token: ${{ steps.generate-token.outputs.token }}
           event-type: new-release-uploaded
-          client-payload: '{"version": "${{ steps.new-release.outputs.version }}"}'
+          client-payload: '{"version": "${{ env.version }}"}'
