@@ -59,7 +59,7 @@ jobs:
       - name: checksum
         id: checksum
         run: |
-          cd juliamono-nerd-font-variation/archive
+          cd juliamono-nerd-font-variant/archive
           {
             echo 'sha256_zip<<EOF'
             shasum -a 256 *.zip
