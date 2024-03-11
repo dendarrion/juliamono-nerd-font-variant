@@ -68,8 +68,8 @@ jobs:
           tag_name: ${{ env.version }}
           generate_release_notes: true
           files: |
-            ${{ env.version }}.zip
-            ${{ env.version }}.tar.gz
+            ttf-juliamono-nerd-font-variant-v${{ env.version }}.zip
+            ttf-juliamono-nerd-font-variant-v${{ env.version }}.tar.gz
             juliamono-nerd-font-regular.zip
             juliamono-nerd-font-regular.tar.gz
             juliamono-nerd-font-propo.zip
