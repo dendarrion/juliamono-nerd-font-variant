@@ -56,6 +56,31 @@ jobs:
           git commit -m 'Updated juliamono-nerd-font-variant to ${{ env.version }}'
           git push
 
+      - name: checksum
+        id: checksum
+        run: |
+          cd juliamono-nerd-font-variation/archive
+          {
+            echo 'sha256_zip<<EOF'
+            shasum -a 256 *.zip
+            echo EOF
+          } >> $GITHUB_OUTPUT
+          {
+            echo 'sha256_tgz<<EOF'
+            shasum -a 256 *.tar.gz
+            echo EOF
+          } >> $GITHUB_OUTPUT
+          {
+            echo 'md5sum_zip<<EOF'
+            md5sum *.zip
+            echo EOF
+          } >> $GITHUB_OUTPUT
+          {
+            echo 'md5sum_tgz<<EOF'
+            md5sum *.tar.gz
+            echo EOF
+          } >> $GITHUB_OUTPUT
+
       - uses: actions/create-github-app-token@v1
         id: generate-token
         with:
@@ -75,10 +100,16 @@ jobs:
             juliamono-nerd-font-regular.tar.gz
             juliamono-nerd-font-propo.zip
             juliamono-nerd-font-propo.tar.gz
+          body: |
+            `sha -a 256` Checksum
+            ```bash
+            ${{ steps.checksum.outputs.sha256_zip }}
 
-      - name: Dispatch for SHA Generator
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ steps.generate-token.outputs.token }}
-          event-type: new-release-uploaded
-          client-payload: '{"version": "${{ env.version }}"}'
+            ${{ steps.checksum.outputs.sha256_tgz }}
+            ```
+            `md5sum` Checksum
+            ```bash
+            ${{ steps.checksum.outputs.md5sum_zip }}
+
+            ${{ steps.checksum.outputs.md5sum_tgz }}
+            ```
