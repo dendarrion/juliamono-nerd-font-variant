@@ -5,7 +5,7 @@ This is the beautiful [JuliaMono](https://github.com/cormullion/juliamono) font 
 
 Forked from [mietzen's single width glyphs patch](https://github.com/mietzen/juliamono-nerd-font). The `--mono` version causes funky looking glyphs in my waybar config similar to [this](https://old.reddit.com/r/voidlinux/comments/10o6yql/nerdfont_glyphs_too_small_on_waybar).
 
-### [Download](https://github.com/mietzen/juliamono-nerd-font/releases/download/v0.054/font.zip)
+### [Download](https://github.com/mietzen/juliamono-nerd-font/releases/download/v0.054/fonts.zip)
 
 ## Example
 
