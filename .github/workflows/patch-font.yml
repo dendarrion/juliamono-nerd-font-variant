@@ -30,7 +30,7 @@ jobs:
 
       - name: Patch
         run: |
-          mkdir -p font
+          mkdir -p font/{regular,propo}
           docker run --rm -v `pwd`/juliamono:/in -v `pwd`/font/regular:/out nerdfonts/patcher --complete --careful --no-progressbars
           docker run --rm -v `pwd`/juliamono:/in -v `pwd`/font/propo:/out nerdfonts/patcher --complete --variable-width-glyphs --careful --no-progressbars
 
