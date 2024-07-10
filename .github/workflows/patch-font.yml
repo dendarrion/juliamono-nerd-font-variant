@@ -53,18 +53,6 @@ jobs:
           cd juliamono-nerd-font-variant
           sed -i 's/releases\/download\/v[0-9.]\+/releases\/download\/${{ env.version }}/g' README.md
 
-      - name: Create file checksum
-        id: checksum
-        run: |
-          for f in *.zip; do
-            shasum -a 256 $f > "$f.sha256"
-          done
-          {
-            echo 'sha256_zip<<EOF'
-            shasum -a 256 *.zip
-            echo EOF
-          } >> $GITHUB_OUTPUT
-
       - uses: actions/create-github-app-token@v1
         id: merge-token
         with:
