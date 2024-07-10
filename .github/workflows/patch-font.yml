@@ -41,7 +41,7 @@ jobs:
           path: font/*
           retention-days: 14
 
-      - name: Zip Release Artifacts
+      - name: Create Zip for Release
         working-directory: juliamono-nerd-font-variant
         run: |
           zip -r ttf-juliamono-nerd-font-variant-${{ env.version }}.zip font/*
