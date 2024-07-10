@@ -44,9 +44,9 @@ jobs:
       - name: Zip Release Artifacts
         working-directory: juliamono-nerd-font-variant
         run: |
-          zip ttf-juliamono-nerd-font-variant-v${{ env.version }}.zip font/*
-          zip regular-v${{ env.version }}.zip font/regular
-          zip propo-v${{ env.version }}.zip font/propo
+          zip ttf-juliamono-nerd-font-variant-${{ env.version }}.zip font/*
+          zip regular-${{ env.version }}.zip font/regular
+          zip propo-${{ env.version }}.zip font/propo
 
       - name: Update download link in README.md
         run: |
@@ -100,6 +100,6 @@ jobs:
 
       - name: Create Release
         working-directory: juliamono-nerd-font-variant
-        run: gh release create ${{ env.version }} ../ttf-juliamono-nerd-font-variant-v${{ env.version }}.zip ../regular-v${{ env.version }}.zip ../propo-v${{ env.version }}.zip --generate-notes
+        run: gh release create ${{ env.version }} ttf-juliamono-nerd-font-variant-${{ env.version }}.zip regular-v${{ env.version }}.zip propo-v${{ env.version }}.zip --generate-notes
         env:
           GH_TOKEN: ${{ steps.merge-token.outputs.token }}
