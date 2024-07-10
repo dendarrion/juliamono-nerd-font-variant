@@ -44,9 +44,9 @@ jobs:
       - name: Zip Release Artifacts
         working-directory: juliamono-nerd-font-variant
         run: |
-          zip -j fonts.zip font/*
-          zip -j regular.zip font/regular
-          zip -j propo.zip font/propo
+          zip fonts.zip font/*
+          zip regular.zip font/regular
+          zip propo.zip font/propo
 
       - name: Update download link in README.md
         run: |
