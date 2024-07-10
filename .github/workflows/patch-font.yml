@@ -44,9 +44,9 @@ jobs:
       - name: Zip Release Artifacts
         working-directory: juliamono-nerd-font-variant
         run: |
-          zip fonts.zip font/*
-          zip regular.zip font/regular
-          zip propo.zip font/propo
+          zip ttf-juliamono-nerd-font-variant-v${{ env.version }}.zip font/*
+          zip regular-v${{ env.version }}.zip font/regular
+          zip propo-v${{ env.version }}.zip font/propo
 
       - name: Update download link in README.md
         run: |
@@ -99,36 +99,7 @@ jobs:
           GH_TOKEN: ${{ steps.approve-token.outputs.token }}
 
       - name: Create Release
-        if: steps.pr.outputs.pull-request-operation == 'created'
         working-directory: juliamono-nerd-font-variant
-        run: gh release create ${{ env.version }} ../fonts.zip ../regular.zip ../propo.zip --generate-notes
+        run: gh release create ${{ env.version }} ../ttf-juliamono-nerd-font-variant-v${{ env.version }}.zip ../regular-v${{ env.version }}.zip ../propo-v${{ env.version }}.zip --generate-notes
         env:
           GH_TOKEN: ${{ steps.merge-token.outputs.token }}
-      
-      # Old Release File Creation
-      # - name: Create Pull Request
-      #   id: pr
-      #   uses: peter-evans/create-pull-request@v6
-      #   with:
-      #     token: ${{ steps.generate-token.outputs.token }}
-      #     tag_name: ${{ env.version }}
-      #     generate_release_notes: true
-      #     append_body: false
-      #     files: |
-      #       ttf-juliamono-nerd-font-variant-v${{ env.version }}.zip
-      #       ttf-juliamono-nerd-font-variant-v${{ env.version }}.tar.gz
-      #       juliamono-nerd-font-regular.zip
-      #       juliamono-nerd-font-regular.tar.gz
-      #       juliamono-nerd-font-propo.zip
-      #       juliamono-nerd-font-propo.tar.gz
-      #     body: |
-      #       `sha -a 256` Checksum
-      #       ```bash
-      #       ${{ steps.checksum.outputs.sha256_zip }}
-      #       ${{ steps.checksum.outputs.sha256_tgz }}
-      #       ```
-      #       `md5sum` Checksum
-      #       ```bash
-      #       ${{ steps.checksum.outputs.md5sum_zip }}
-      #       ${{ steps.checksum.outputs.md5sum_tgz }}
-      #       ```
