@@ -42,7 +42,6 @@ jobs:
           retention-days: 14
 
       - name: Create Zip for Release
-        working-directory: juliamono-nerd-font-variant
         run: |
           zip -r ttf-juliamono-nerd-font-variant-${{ env.version }}.zip font/*
           zip -r regular-${{ env.version }}.zip font/regular
@@ -100,6 +99,6 @@ jobs:
 
       - name: Create Release
         working-directory: juliamono-nerd-font-variant
-        run: gh release create ${{ env.version }} ttf-juliamono-nerd-font-variant-${{ env.version }}.zip regular-${{ env.version }}.zip propo-${{ env.version }}.zip --generate-notes
+        run: gh release create ${{ env.version }} ../ttf-juliamono-nerd-font-variant-${{ env.version }}.zip ../regular-${{ env.version }}.zip ../propo-${{ env.version }}.zip --generate-notes
         env:
           GH_TOKEN: ${{ steps.merge-token.outputs.token }}
