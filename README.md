@@ -7,7 +7,7 @@ Forked from [mietzen's single width glyphs patch](https://github.com/mietzen/jul
 
 **Feel free to fork and modify!**
 
-### [Download](https://github.com/mietzen/juliamono-nerd-font/releases/download/v0.058/fonts.zip)
+### [Download](https://github.com/mietzen/juliamono-nerd-font/releases/download/v0.059/fonts.zip)
 
 ## Example
 
