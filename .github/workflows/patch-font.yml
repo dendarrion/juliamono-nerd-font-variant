@@ -101,9 +101,13 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.approve-token.outputs.token }}
 
+      - name: Generate SHA256
+        run: |
+          shasum -a 256 fonts-variant.zip > fonts-variant.zip.sha256
+
       - name: Create Release
         if: steps.pr.outputs.pull-request-operation == 'created'
         working-directory: juliamono-nerd-font-variant
-        run: gh release create ${{ env.version }} ../fonts-variant.zip --generate-notes
+        run: gh release create ${{ env.version }} ../fonts-variant.zip ../fonts-variant.zip.sha256 --generate-notes
         env:
           GH_TOKEN: ${{ steps.merge-token.outputs.token }}
